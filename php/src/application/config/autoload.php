@@ -59,7 +59,7 @@ $autoload['packages'] = array();
 |	$autoload['libraries'] = array('user_agent' => 'ua');
 */
 
-$autoload['libraries'] = array('database','session','doctrine','pagination','image_lib', 'env');
+$autoload['libraries'] = array( 'database','session','doctrine','pagination','image_lib', 'env');
 
 /*
 | -------------------------------------------------------------------
@@ -134,3 +134,5 @@ $autoload['language'] = array();
 |	$autoload['model'] = array('first_model' => 'first');
 */
 $autoload['model'] = array();
+
+$config['composer_autoload'] = FCPATH. 'vendor'. DIRECTORY_SEPARATOR . 'autoload.php';

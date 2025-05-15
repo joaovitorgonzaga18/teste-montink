@@ -20,7 +20,24 @@ class Welcome extends CI_Controller {
 	 */
 	public function index()
 	{
-		$this->load->view('welcome_message');
+		$produtos = $this->doctrine->em->getRepository('Entity\Produtos')->findAll();
+
+		foreach($produtos as $produto) {
+
+			$idProduto = $produto->getId();
+			$estoque = $this->doctrine->em->getRepository('Entity\Estoque')->findOneBy(array('idProduto' => $idProduto));
+
+			
+			$data['produtos'][] = [
+				'id' => $idProduto,
+				'nome' => $produto->getNome(),
+				'preco' => 'R$ ' . number_format($produto->getPreco(), 2, ',', '.'),
+				'variacao' => $produto->getVariacao(),
+				'estoque' => ($estoque) ? $estoque->getQtdEstoque() : 0,
+			];
+		}
+
+		$this->load->view('welcome_message', $data);
 	}
 
 	public function teste(){
