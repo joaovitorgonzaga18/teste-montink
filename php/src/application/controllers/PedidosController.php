@@ -1,5 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
+use BcMath\Number;
 use Entity\Pedidos;
 use Entity\Produtos;
 use Entity\Estoque;
@@ -80,22 +81,51 @@ class PedidosController extends CI_Controller{
 
 	}
 
+	// Função responsável por encontrar um único pedido baseado no seu ID
 	public function get($idPedido = 0) {
 		
-		$data = [];
+		$data = ["pedido" => [], "produtos" => []];
 
-		// Verificar se o id do produto é válido
+		// Verificar se o id do pedido é válido
 		if ($idPedido > 0) {
-			$produto = $this->doctrine->em->find('Entity\Pedidos', $idPedido);
+			$pedido = $this->doctrine->em->find('Entity\Pedidos', $idPedido);
 			
-			// Verificar se o produto foi encontrado
-			if ($produto) {
-				$data['produto'] = $produto;
+			// Verificar se o pedido foi encontrado
+			if ($pedido) {
+
+				$pedido_produto = $this->doctrine->em->getRepository('Entity\PedidoProduto')->findBy(array('idPedido' => $pedido->getId()));
+
+				// Verificar se há produtos no pedido
+				if ($pedido_produto) {
+
+					// Criar um array com os produtos do pedido
+					foreach($pedido_produto as $k => $row) {
+
+						$produto = $row->getIdProduto();
+
+						$data['produtos'][] = [
+							"nome" => $produto->getNome(),
+							"preco" => 'R$ ' . number_format($produto->getPreco(), 2, ',' , '.'),
+						];
+					}
+				}
+
+				$cupom = $pedido->getIdCupom();
+
+				$data['pedido'] = [
+                    'id' => $pedido->getId(),
+                    'cupom' => ($cupom) ? $cupom->getCodigo() : '---',
+                    'preco' => 'R$ ' . number_format($pedido->getPreco(), 2, ',', '.'),
+                    'desconto' => 'R$ ' . number_format($pedido->getDesconto(), 2, ',', '.'),
+                    'frete' => 'R$ ' . number_format($pedido->getFrete(), 2, ',', '.'),
+                    'cep' => $pedido->getCep(),
+                    'data_pedido' => date('d/m/Y h:i:s', strtotime($pedido->getDataPedido())),
+				];
 			}
 		}
 
 		// Carregar view principal
-		$this->load->view('principal_view', $data);
+		$this->load->view('pedido_view', $data);
 	}
 
 	// Função responsável por encontrar e listar todos os produtos armazenados
