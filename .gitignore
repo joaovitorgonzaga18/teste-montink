@@ -1,2 +1,3 @@
 /php/src/.env
 .env
+/php/src/application/cache
