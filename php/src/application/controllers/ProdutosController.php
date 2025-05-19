@@ -19,8 +19,8 @@ class ProdutosController extends CI_Controller{
 		$newProduto = new Entity\Produtos;
 		
 		// Definindo os valores do novo Produto com base nos parametros passados
-		$newProduto->setNome('teste');
-		$newProduto->setPreco(10);
+		$newProduto->setNome($post['nome']);
+		$newProduto->setPreco($post['preco']);
 		$newProduto->setVariacao(1);		
 		
 		// Persistir o novo Produto no banco de dados com EntityManager
@@ -36,11 +36,9 @@ class ProdutosController extends CI_Controller{
 			// Instanciar nova entidade Estoque
 			$newEstoque = new Entity\Estoque;
 
-			var_dump($newProduto);
-
 			// Definir os valores do produto com base nos parametros passados
 			$newEstoque->setIdProduto($newProduto); // Vinculo com o produto criado
-			$newEstoque->setQtdEstoque(100);
+			$newEstoque->setQtdEstoque($post['estoque']);
 
 			//Persistir o novo Estoque no banco de dados com EntityManager
 			$this->doctrine->em->persist($newEstoque);
@@ -52,11 +50,12 @@ class ProdutosController extends CI_Controller{
 		}
 
 		// Carregar view principal
-		$this->load->view('principal_view', $data);
+		// $this->load->view('principal_view', $data);
 
 	}
 
-	public function get($idProduto = 0) {
+	// Função responsável por encontrar um único produto baseado no seu ID
+	public function get($idProduto = 0, $json = 0) {
 		
 		$data = [];
 
@@ -66,12 +65,25 @@ class ProdutosController extends CI_Controller{
 			
 			// Verificar se o produto foi encontrado
 			if ($produto) {
-				$data['produtos'] = $produto;
+				
+                $estoque = $this->doctrine->em->getRepository('Entity\Estoque')->findOneBy(array('idProduto' => $idProduto));
+
+				$data['produto'] = [
+                    'id' => $idProduto,
+                    'nome' => $produto->getNome(),
+                    'preco' => $produto->getPreco(),
+                    'variacao' => $produto->getVariacao(),
+                    'estoque' => ($estoque) ? $estoque->getQtdEstoque() : 0,
+				];
 			}
 		}
 
-		// Carregar view principal
-		$this->load->view('principal_view', $data);
+		if ($json == 1) {
+			echo json_encode($data);
+		} else {
+			// Carregar view principal
+			$this->load->view('produto_view', $data);
+		}
 	}
 
 	// Função responsável por encontrar e listar todos os produtos armazenados
@@ -108,14 +120,14 @@ class ProdutosController extends CI_Controller{
 				$produto->setPreco((isset($post['preco']) && $post['preco'] != $produto->getPreco()) ? $post['preco'] : $produto->getPreco());
 				$produto->setVariacao((isset($post['variacao']) && $post['variacao'] != $produto->getVariacao()) ? $post['variacao'] : $produto->getVariacao());
 
-				$estoque = $this->doctrine->em->findBy('Entity\Estoque', array('id_produto' => $produto->getId()));
-				
+				$estoque = $this->doctrine->em->getRepository('Entity\Estoque')->findOneBy(array('idProduto' => $idProduto));
+
 				if ($estoque)
-					$estoque->setQtdEstoque((isset($post['variacao']) && $post['variacao'] != $estoque->getQtdEstoque()) ? $post['variacao'] : $estoque->getQtdEstoque());
+					$estoque->setQtdEstoque((isset($post['estoque']) && $post['estoque'] != $estoque->getQtdEstoque()) ? $post['estoque'] : $estoque->getQtdEstoque());
+					$this->doctrine->em->persist($estoque);
 
 				// Persistir os novos dados do Produto e do Estoque no banco de dados com EntityManager
 				$this->doctrine->em->persist($produto);
-				$this->doctrine->em->persist($estoque);
 				$this->doctrine->em->flush();
 
 				if ($produto)
@@ -124,7 +136,7 @@ class ProdutosController extends CI_Controller{
 		}
 
 		// Carregar view principal
-		$this->load->view('principal_view', $data);
+		// $this->load->view('principal_view', $data);
 	}
     
 
