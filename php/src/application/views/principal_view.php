@@ -149,6 +149,84 @@
                 </div>
             </div>
         </div>
+        <div class="row" style="border-top: 2px solid #bbb; margin-top: 20px;">
+            <div class="col-md-6">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h2>Lista de compras</h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12" id="tabela-lista">
+                        <table class="table table-striped">
+                            <thead class="thead-dark">
+                                <tr class="text-center">
+                                    <th scope="col">ID</th>
+                                    <th scope="col">Nome</th>
+                                    <th scope="col">Preço</th>
+                                    <th scope="col">Quantidade</th>
+                                    <th scope="col">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody class="lista-pedido">
+                                <tr class="text-center">
+                                    <!-- <th><?= $produto['id'] ?></th>
+                                    <td><?= $produto['nome'] ?></td>
+                                    <td><?= $produto['preco'] ?></td>
+                                    <td>
+                                        <button type="button" class="btn btn-primary"><i class="fa-solid fa-trash"></i></button>
+                                        <button type="button" class="btn btn-danger"><i class="fa-solid fa-minus"></i></button>
+                                        <button type="button" class="btn btn-success"><i class="fa-solid fa-plus"></i></button>
+                                    </td> -->
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h2>Informações do pedido</h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-12">
+                        <label for="cupom">Cupom</label>
+                        <input type="text" class="form-control" id="cupom" name="cupom" placeholder="Insira aqui o código do cupom" value="" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-10">
+                        <label for="cep">CEP</label><span id="mensagem-cep"></span>
+                        <input type="text" class="form-control" id="cep" name="cep" placeholder="Ex.: 3234-120" value="" required>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <button type="button" class="btn btn-primary" style="margin-top: 20px; width:100%">Verificar</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <table class="table table-borderless">
+                            <tbody>
+                                <tr>
+                                    <th>Frete:</th>
+                                    <td id="valor-frete">R$ 0,00</td>
+                                </tr>
+                                <tr>
+                                    <th>Desconto:</th>
+                                    <td>R$ 0,00</td>
+                                </tr>
+                                <tr style="font-size: 20px;">
+                                    <th>Valor total:</th>
+                                    <th id="valor-total">R$ 0,00</th>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
