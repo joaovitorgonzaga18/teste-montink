@@ -1,6 +1,7 @@
 function abrir_div(url, div, index, callBack, obj){
 
     jQuery('#'+div).html('');
+// Função responsável por carregar o conteúdo de uma rota em uma div específica
 
 	if(typeof(div)=='undefined'){
 		div = 'container';
