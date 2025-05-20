@@ -344,8 +344,4 @@ $(document).ready(function () {
 		
 		$("body").LoadingOverlay("hide")
 	});
-
-	$("#cupom").change(function() {
-		check_cupom()
-	})
 });
