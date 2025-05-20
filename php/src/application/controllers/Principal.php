@@ -33,7 +33,7 @@ class Principal extends CI_Controller {
             foreach($pedidos as $pedido) {
 
                 $idPedido = $pedido->getId();
-                $cupom = $this->doctrine->em->find('Entity\Cupons', $pedido->getIdCupom());
+                $cupom = ($pedido->getIdCupom()) ? $this->doctrine->em->find('Entity\Cupons', $pedido->getIdCupom()) : null;
                 
                 $data['pedidos'][] = [
                     'id' => $idPedido,

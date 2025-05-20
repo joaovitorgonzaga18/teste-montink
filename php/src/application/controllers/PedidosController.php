@@ -13,9 +13,9 @@ class PedidosController extends CI_Controller{
     // Função responsável por criar e persistir um novo Pedido no banco de dados
 	public function create() {
 
-		$post = $_POST;
+        $post = json_decode(file_get_contents('php://input'), true);
 
-        $post = [
+        /* $post = [
             'pedidos' => [
                 'precos' => [10, 10, 10, 20],
                 'produtos' => [
@@ -27,11 +27,13 @@ class PedidosController extends CI_Controller{
             ],
             'cupom' => 1,
             'cep' => '32340120',
-        ];
+        ]; */
 
 		$data = [];
 
-        $valor_total = array_sum($post['pedidos']['precos']);
+		$pedidos = json_decode($post['pedidos'], true);
+
+        $valor_total = $post['preco'];
         $frete = 20;
 
         if ($valor_total >= 52 && $valor_total <= 166.59) {
@@ -44,14 +46,14 @@ class PedidosController extends CI_Controller{
 		$newPedido = new Entity\Pedidos;
         $cupom = $this->doctrine->em->find('Entity\Cupons', $post['cupom']);
 
-        $desconto = $cupom->getDesconto();
+        $desconto = ($cupom) ? $cupom->getDesconto() : 0;
 		
 		// Definindo os valores do novo Pedido com base nos parametros passados
-        $newPedido->setIdCupom($cupom);
-		$newPedido->setPreco($valor_total - $desconto + $frete);
+        $newPedido->setIdCupom(($cupom) ? $cupom : null);
+		$newPedido->setPreco($valor_total + $frete - $desconto);
         $newPedido->setDesconto($desconto);
         $newPedido->setFrete($frete);
-        $newPedido->setCep($post['cep']);
+        $newPedido->setCep(($post['cep'] != '') ? $post['cep'] : null);
         $newPedido->setDataPedido(date('Y-m-d h:i:s'));
 		
 		// Persistir o novo Pedido no banco de dados com EntityManager
@@ -62,14 +64,17 @@ class PedidosController extends CI_Controller{
 		if ($this->doctrine->em->contains($newPedido)) {
 
             // Para cada produto no pedido, criar um cadastro em pedido_produto
-            foreach($post['pedidos']['produtos'] as $k => $row) {
+            foreach($pedidos['produtos'] as $k => $row) {
                 $produto = $this->doctrine->em->find('Entity\Produtos', $row['id']);
+				$estoque = $this->doctrine->em->getRepository('Entity\Estoque')->findOneBy(array('idProduto' => $row['id']));
 
                 $pedido_produto = new Entity\PedidoProduto;
 
                 $pedido_produto->setIdPedido($newPedido);
                 $pedido_produto->setIdProduto($produto);
                 $pedido_produto->setQtdProduto($row['qtd']);
+
+				$estoque->setQtdEstoque($estoque->getQtdEstoque() - $row['qtd']);
 
                 $this->doctrine->em->persist($pedido_produto);
 
@@ -105,7 +110,8 @@ class PedidosController extends CI_Controller{
 
 						$data['produtos'][] = [
 							"nome" => $produto->getNome(),
-							"preco" => 'R$ ' . number_format($produto->getPreco(), 2, ',' , '.'),
+							"preco" => $this->format_price($produto->getPreco()) . ' (' . $this->format_price($produto->getPreco() * $row->getQtdProduto()) . ')',
+							"qtd" => $row->getQtdProduto(),
 						];
 					}
 				}
@@ -179,6 +185,10 @@ class PedidosController extends CI_Controller{
 
 		// Carregar view principal
 		$this->load->view('principal_view', $data);
+	}
+
+	private function format_price($preco) {
+		return 'R$ ' . number_format($preco, 2, ',' , '.');
 	}
     
 

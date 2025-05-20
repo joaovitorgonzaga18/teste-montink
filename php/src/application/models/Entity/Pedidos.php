@@ -57,7 +57,7 @@ class Pedidos{
         return $this->idCupom;
     }
     
-    public function setIdCupom(\Entity\Cupons $cupom): void {
+    public function setIdCupom($cupom): void {
         $this->idCupom = $cupom;
     }
     
@@ -85,11 +85,11 @@ class Pedidos{
         $this->frete = $frete;
     }
     
-    public function getCep(): string {
+    public function getCep(): ?string {
         return $this->cep;
     }
     
-    public function setCep(string $cep): void {
+    public function setCep($cep): void {
         $this->cep = $cep;
     }
     

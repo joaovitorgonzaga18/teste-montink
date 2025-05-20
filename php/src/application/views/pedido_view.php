@@ -30,7 +30,7 @@
                         <tbody>
                             <?php foreach ($produtos as $k => $produto) { ?>
                                 <tr class="text-right">
-                                    <td><?= $produto['nome'] ?></td>
+                                    <td><?= $produto['nome'] ?> (x<?= $produto['qtd']?>)</td>
                                     <td><?= $produto['preco'] ?></td>
                                 </tr>
                             <?php } ?>
