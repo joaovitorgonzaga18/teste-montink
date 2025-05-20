@@ -13,6 +13,8 @@ if (localStorage.length === 0) {
 
 // Função responsável por carregar o conteúdo de uma rota em uma div específica
 function abrir_div(url, div, index, callBack, obj) {
+	
+	$("body").LoadingOverlay("show")
 
 	jQuery('#' + div).html('');
 
@@ -32,7 +34,8 @@ function abrir_div(url, div, index, callBack, obj) {
 	});
 
 	jQuery.post(url, { index: index }, function (resposta) {
-		jQuery('#' + div).html(resposta);
+		jQuery('#' + div).html(resposta);	
+		$("body").LoadingOverlay("hide")
 	}).done(function () {
 		if (typeof (callBack) == 'undefined') {
 			setTimeout(callBack, 200);
@@ -43,7 +46,8 @@ function abrir_div(url, div, index, callBack, obj) {
 
 // Função responsável por calcular e salvar as informações dos pedidos adicionados em LocalStorage
 function add_pedido(id) {
-
+	
+	$("body").LoadingOverlay("show")
 	$.get("/index.php/produtoscontroller/get/" + id + "/1", function (data) {
 
 
@@ -89,8 +93,8 @@ function add_pedido(id) {
 			'<button type="button" class="btn btn-danger" onclick="remove_pedido(' + produto.id + ')"><i class="fa-solid fa-trash"></i></button>' +
 			'</td>' +
 			'</tr>');
-
-
+		
+		$("body").LoadingOverlay("hide")
 
 	}, "json");
 }
@@ -138,6 +142,8 @@ function change_alert(hidden, status, message) {
 
 function check_cupom() {
 
+	$("body").LoadingOverlay("show")
+
 	$.get("/index.php/cuponscontroller/getbycode/" + $('#cupom').val() + "/1", function (data) {
 
 		if (data == 'undefined' || data.length === 0 || data.cupom.valido === 0) {
@@ -160,6 +166,7 @@ function check_cupom() {
 			localStorage.desconto = desconto
 
 			change_alert(false, 'danger', 'Cupom não encontrado/inválido')
+			$("body").LoadingOverlay("hide")
 
 		} else {
 
@@ -185,8 +192,11 @@ function check_cupom() {
 			localStorage.desconto = desconto
 
 			change_alert(false, 'success', 'Cupom aplicado')
+			$("body").LoadingOverlay("hide")
 		}
+
 	}, 'json')
+			
 }
 
 function load_pedido() {
@@ -292,6 +302,7 @@ $(document).ready(function () {
 
 	$("#confirma-pedido").click(function () {
 
+		$("body").LoadingOverlay("show")
 		var local_json = JSON.parse(localStorage.pedidos)
 		var arr = jQuery.grep(local_json.produtos, function (n, i) {
 			return (n !== "" && n != null);
@@ -330,6 +341,8 @@ $(document).ready(function () {
 				// Handle errors during the AJAX request
 			}
 		});
+		
+		$("body").LoadingOverlay("hide")
 	});
 
 	$("#cupom").change(function() {
