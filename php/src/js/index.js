@@ -1,4 +1,4 @@
-localStorage.clear()
+// localStorage.clear()
 
 if (localStorage.length === 0) {
 	localStorage.preco = 0.0;
@@ -301,8 +301,6 @@ function update_qtd(btn) {
 $(document).ready(function () {
 
 	$("#confirma-pedido").click(function () {
-
-		$("body").LoadingOverlay("show")
 		var local_json = JSON.parse(localStorage.pedidos)
 		var arr = jQuery.grep(local_json.produtos, function (n, i) {
 			return (n !== "" && n != null);
@@ -319,7 +317,9 @@ $(document).ready(function () {
 		if ($("#cep").val() === '') {
 			change_alert(false, 'danger', 'O campo CEP não pode estar vazio')
 			return
-		}
+		}		
+
+		$("body").LoadingOverlay("show")
 
 		$.ajax({
 			url: "/index.php/pedidoscontroller/create", // Replace with your server URL
@@ -332,15 +332,17 @@ $(document).ready(function () {
 			dataType: "json",
 			contentType: "application/json",
 			success: function (response) {
-				alert('certo!!');
-				localStorage.clear()
-				location.reload();
+
 			},
 			error: function (xhr, status, error) {
 				// console.error("Error:", status, error);
 				// Handle errors during the AJAX request
 			}
 		});
+		
+		alert('certo!!');
+		localStorage.clear()
+		location.reload();
 		
 		$("body").LoadingOverlay("hide")
 	});
